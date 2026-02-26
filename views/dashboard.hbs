@@ -1,0 +1,81 @@
+<div class="container">
+  <h2>Dashboard - All Reports</h2>
+  
+  {{#if reports.length}}
+    <table class="reports-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Item Name</th>
+          <th>Date Lost</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each reports}}
+          <tr>
+            <td>{{id}}</td>
+            <td>{{name}}</td>
+            <td>{{date}}</td>
+            <td>{{status}}</td>
+            <td><a href="/items/{{id}}">View Details</a></td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  {{else}}
+    <p>No reports yet. <a href="/report">Report a lost item</a></p>
+  {{/if}}
+</div>
+
+<style>
+  .container {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+
+  .reports-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+  }
+
+  .reports-table th, .reports-table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+  }
+
+  .reports-table th {
+    background-color: #f0f0f0;
+    font-weight: bold;
+  }
+
+  .reports-table tr:hover {
+    background-color: #f9f9f9;
+  }
+
+  .reports-table a {
+    color: #333;
+    text-decoration: none;
+    border-bottom: 1px solid #333;
+  }
+
+  .reports-table a:hover {
+    color: #666;
+  }
+
+  p {
+    text-align: center;
+    color: #666;
+  }
+
+  p a {
+    color: #333;
+    text-decoration: none;
+    border-bottom: 1px solid #333;
+  }
+</style>

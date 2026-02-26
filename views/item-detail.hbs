@@ -4,8 +4,8 @@
       <h2>{{item.name}}</h2>
       
       <div class="item-image">
-        {{#if item.imagePath}}
-          <img src="{{item.imagePath}}" alt="{{item.name}}">
+        {{#if item.image}}
+          <img src="/uploads/{{item.image}}" alt="{{item.name}}">
         {{else}}
           <p>No image available</p>
         {{/if}}
@@ -22,7 +22,7 @@
 
       <div class="actions">
         <form method="POST" action="/items/{{item.id}}/status" style="display: inline;">
-          <select name="newStatus">
+          <select name="status">
             <option value="Lost" {{#if (eq item.status 'Lost')}}selected{{/if}}>Lost</option>
             <option value="Found" {{#if (eq item.status 'Found')}}selected{{/if}}>Found</option>
             <option value="Closed" {{#if (eq item.status 'Closed')}}selected{{/if}}>Closed</option>

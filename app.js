@@ -28,6 +28,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
+const multer = require('multer');
+const upload = multer({ dest: 'public/uploads/' });
+
 const uploadsDir = path.join(__dirname, 'public', 'uploads');
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
@@ -49,13 +52,12 @@ app.get('/report', (req, res) => {
 });
 
 
-app.post('/report', (req, res) => {
-  const { name, description, locationLost, date, contactEmail } = req.body;
+app.post('/report', upload.single('image'), (req, res) => {
+  const { name, description, location, date, contact } = req.body;
 
-  // If using multer later:
   const itemImage = req.file;
 
-  if (!name || !description || !locationLost || !date || !contactEmail || !itemImage) {
+  if (!name || !description || !location || !date || !contact || !itemImage) {
     return res.status(400).send('All fields including image are required.');
   }
 
@@ -63,9 +65,9 @@ app.post('/report', (req, res) => {
     id: Date.now().toString(),
     name,
     description,
-    locationLost,
+    location,
     date,
-    contactEmail,
+    contact,
     image: itemImage.filename,
     status: 'Lost'
   };

@@ -14,7 +14,7 @@ const hbs = create({
   layoutsDir: path.join(__dirname, 'views', 'layouts'),
   partialsDir: path.join(__dirname, 'views', 'partials'),
   helpers: {
-    eq: function(a, b) {
+    eq: function (a, b) {
       return a === b;
     }
   }
@@ -35,37 +35,102 @@ if (!fs.existsSync(uploadsDir)) {
 
 global.reports = [];
 
+// Routes
+
 app.get('/', (req, res) => {
   res.render('index');
 });
+
+
+// REPORT FORM PAGE
 
 app.get('/report', (req, res) => {
   res.render('report');
 });
 
+
 app.post('/report', (req, res) => {
-  // TODO: handle file upload with multiparty and validate form data
+  const { name, description, locationLost, date, contactEmail } = req.body;
+
+  // If using multer later:
+  const itemImage = req.file;
+
+  if (!name || !description || !locationLost || !date || !contactEmail || !itemImage) {
+    return res.status(400).send('All fields including image are required.');
+  }
+
+  const newItem = {
+    id: Date.now().toString(),
+    name,
+    description,
+    locationLost,
+    date,
+    contactEmail,
+    image: itemImage.filename,
+    status: 'Lost'
+  };
+
+  global.reports.push(newItem);
+
   res.redirect('/dashboard');
 });
+
+
+// DASHBOARD
 
 app.get('/dashboard', (req, res) => {
   res.render('dashboard', { reports: global.reports });
 });
 
+
+// ITEM DETAIL
+
 app.get('/items/:id', (req, res) => {
   const item = global.reports.find(r => r.id === req.params.id);
-  res.render('item-detail', { item: item });
+
+  if (!item) {
+    return res.status(404).send('Item not found');
+  }
+
+  res.render('item-detail', { item });
 });
+
+
+// STATUS UPDATE
 
 app.post('/items/:id/status', (req, res) => {
-  // TODO: update status for item
+  const item = global.reports.find(r => r.id === req.params.id);
+
+  if (!item) {
+    return res.status(404).send('Item not found');
+  }
+
+  const { status } = req.body;
+
+  if (!status || !['Lost', 'Found', 'Closed'].includes(status)) {
+    return res.status(400).send('Invalid status');
+  }
+
+  item.status = status;
+
+  res.redirect(`/items/${item.id}`);
+});
+
+
+// DELETE
+
+app.post('/items/:id/delete', (req, res) => {
+  const index = global.reports.findIndex(r => r.id === req.params.id);
+
+  if (index === -1) {
+    return res.status(404).send('Item not found');
+  }
+
+  global.reports.splice(index, 1);
+
   res.redirect('/dashboard');
 });
 
-app.post('/items/:id/delete', (req, res) => {
-  // TODO: remove item from array
-  res.redirect('/dashboard');
-});
 
 app.listen(PORT, () => {
   console.log(`Server started on http://localhost:${PORT}`);
